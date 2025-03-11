@@ -1,33 +1,32 @@
-pipeline {   // pes1ug22am033
+pipeline { // pes1ug22am033
     agent any
-    
+
     stages {
         stage('Build') {
             steps {
                 script {
-                    sh 'g++ -o output PES1UG22AM033-1 main.cpp'  // Compile C++ file
+                    if (fileExists('main.cpp')) {
+                        sh 'g++ -o output main.cpp'
+                    } else {
+                        error "Build failed: main.cpp not found!"
+                    }
                 }
             }
         }
-        
         stage('Test') {
             steps {
-                script {
-                    sh './output'  // Run the compiled C++ program
-                }
+                sh './output' // Run the compiled binary
             }
         }
-        
         stage('Deploy') {
             steps {
-                echo "Deployment Successful!"
+                echo "Deployment successful!"
             }
         }
     }
-
     post {
         failure {
-            echo 'Pipeline failed'
+            echo "Pipeline failed"
         }
     }
 }
